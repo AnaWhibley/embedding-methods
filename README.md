@@ -1,193 +1,32 @@
-Certainly, here is an example of how you could create a React app using TypeScript and Webpack, with a form component that can be embedded in a parent project that lives in a different repository:
 
-1. Create a new React project with TypeScript:
+I’ve written about how to use web components with Angular Elements, but I think the discussion about web components goes a lot deeper than just how to use them. Web components provide a standardized way to export components and functionality across web platforms. In the last article, we created a contact form using Angular Elements and saw just how easy it is to integrate them into a website. It could be said that this is the exact same kind of thing an iFrame would have been used for. In this article, I want to discuss these two technologies, how they differ, where they’re similar, and what the future may hold for them both.
 
-   ```
-   npx create-react-app my-form --template typescript
-   ```
+What is an iFrame?
+In short, an iFrame is an HTML document embedded inside another HTML document. You’ve probably come across loads of different kinds of iFrames even if you weren’t fully aware of it. The humble iFrame has been around since the late 90s and was first introduced by Microsoft. It became the standard for embedding one site inside another for decades. Today we still see a boatload of sites using iFrames. The reason for that is that no one had really come up with something better! There was no real way to do what an iFrame does and make it completely cross-platform.
 
-2. Install the necessary dependencies:
+At its core, an iFrame isn’t truly embedding anything in any website. It merely provides a window to view another website. There are a number of issues that come along with that.
 
-   ```
-   cd my-form
-   npm install --save-dev webpack webpack-cli webpack-dev-server ts-loader html-webpack-plugin
-   ```
+The first issue is that the iFrame will not look like it’s meant to be there. It looks out of place as you could have two sites with very large style differences and if you use an iFrame in one to link to the other then it’s going to look weird. Your iFrame also has to be of a fixed width and length and it can be difficult to properly position it on a site that makes it look more natural.
 
-3. Create a new directory named `src/components` and add a new file named `MyForm.tsx` inside it:
+The second issue is the performance impact of an iFrame. Since you’re embedding another site the client still needs to load all that content. If the owner of the site you’re embedding does a bad job your site will also suffer as a result. This comes from the issue of not being able to defer an iFrame like you could a script tag.
 
-   ```tsx
-   import React, { useState } from 'react';
+The third issue is a security issue. Literally, you could take any site and embed it as an iFrame with only the link to the site. This presents an issue like any open window would in your home. Since your site is communicating with another site that opens up a security hole. If the site you’re embedding has a security issue then so does yours.
 
-   interface FormProps {
-     firstName: string;
-     lastName: string;
-     onSubmit: (firstName: string, lastName: string) => void;
-   }
+What are Web Components
+Web components are literally custom components you can use anywhere. Rather than using the Microsoft-created iFrame tag Web Components allow you to make your own custom tag. You can even export web components as NPM packages if you so choose.
 
-   const MyForm: React.FC<FormProps> = ({ firstName, lastName, onSubmit }) => {
-     const [values, setValues] = useState({ firstName, lastName });
+So at a high level, iFrames and web components seem pretty similar. I can tell you they are worlds different. While an iFrame is basically a window into another website a web component is literally a single component that can be used by the consumer. Unlike an iFrame, you can’t just make anything into a Web Component. Web components are based around modern web standards and are a set of APIs that allow you to embed components into a website using an HTML tag.
 
-     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-       setValues({ ...values, [e.target.name]: e.target.value });
-     };
+Web components seem to solve all the problems that iFrames have. Let’s look at them one at a time. The first issue I brought up was the look at feel. Since web components are literally just simple components like a button, an input field, or a whole form, they are small enough to be designed to look more homogenous with the site they’re used on. Also, depending on how you make the component, it can inherit certain attributes (like text style) from the parent site while maintaining its own styling that is more explicit. What does that mean? Using text style as an example, if your style sheet does not specify a font it will use the font of the parent site. That gives a really smooth transition in a website from the native website to a web component. A user would have no idea they’re interacting with a web component.
 
-     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-       e.preventDefault();
-       onSubmit(values.firstName, values.lastName);
-     };
+Thinking about performance you import a web component using a script tag. Unlike an iFrame, you can defer a script tag. The defer keyword waits until a site is loaded and then runs the script. This means that the web component, even if it’s large, will not block the initial render. Since we’re not loading 2 websites the packages will generally be smaller as well. That’s not to say there is no performance impact, but it’s negligible.
 
-     return (
-       <form onSubmit={handleSubmit}>
-         <div>
-           <label htmlFor="firstName">First Name:</label>
-           <input type="text" name="firstName" value={values.firstName} onChange={handleChange} />
-         </div>
-         <div>
-           <label htmlFor="lastName">Last Name:</label>
-           <input type="text" name="lastName" value={values.lastName} onChange={handleChange} />
-         </div>
-         <button type="submit">Submit</button>
-       </form>
-     );
-   };
+The third issue is security. I mentioned earlier that you can’t just take any website and embed it as a web component. Using web components is more like installing an NPM package because they can also be NPM packages. So security certainly isn’t perfect, but it’s going to be a whole lot better than using an iFrame. If you want to use a web component you can use API keys to secure it, that does mean a lot more work but security is worth it.
 
-   export default MyForm;
-   ```
+If you’re interested in how to make a web component I have a whole article about that here: Using Web Components in Angular.
 
-4. Install the `react-web-component` package:
+So What?
+This is the question, so what? Will web components make the iFrame a relic of the past? The simple answer is, I sure hope so! I see a bright future for web components and I hope part of that future is making iFrames outdated. You can do pretty much everything an iFrame does but better. The only thing iFrames can do is easily and quickly embed one website in another one. In today’s day and age, I don’t see that as a good thing. I see iFrames as security and performance holes. However, I do not see iFrames going away soon, unfortunately (no matter how much I want them to). Any time there is a new technology, which web components aren’t really new, but they’re coming back around, adoption takes time. It takes time to become popular and more widely used. Until we start using web components more often I don’t think we’ll see it phase out iFrames any time soon.
 
-   ```
-   npm install --save react-web-component
-   ```
+Let me know what you think in the comments I’d be interested to hear what you guys think about web components vs iFrames.
 
-5. Update the `MyForm.tsx` file to export a web component:
-
-   ```tsx
-   import React, { useState } from 'react';
-   import { defineWebComponent } from 'react-web-component';
-
-   interface FormProps {
-     firstName: string;
-     lastName: string;
-     onSubmit: (firstName: string, lastName: string) => void;
-   }
-
-   const MyForm: React.FC<FormProps> = ({ firstName, lastName, onSubmit }) => {
-     const [values, setValues] = useState({ firstName, lastName });
-
-     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-       setValues({ ...values, [e.target.name]: e.target.value });
-     };
-
-     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-       e.preventDefault();
-       onSubmit(values.firstName, values.lastName);
-     };
-
-     return (
-       <form onSubmit={handleSubmit}>
-         <div>
-           <label htmlFor="firstName">First Name:</label>
-           <input type="text" name="firstName" value={values.firstName} onChange={handleChange} />
-         </div>
-         <div>
-           <label htmlFor="lastName">Last Name:</label>
-           <input type="text" name="lastName" value={values.lastName} onChange={handleChange} />
-         </div>
-         <button type="submit">Submit</button>
-       </form>
-     );
-   };
-
-   defineWebComponent(MyForm, 'my-form');
-   ```
-6. Create a new directory in the root of your project and name it `src`.
-7. Inside the `src` directory, create a new file named `index.tsx`.
-8. Open the `index.tsx` file and add the following code:
-
-```tsx
-import React from 'react';
-import ReactDOM from 'react-dom';
-import MyForm from '../components/MyForm';
-
-// Render the MyForm component to the #root element
-ReactDOM.render(
-  <MyForm />,
-  document.getElementById('root')
-);
-```
-
-9. This code imports the `MyForm` component from the `../components/MyForm` path and renders it to the `#root` element in the HTML file.
-
-10. Save the `index.tsx` file.
-
-At this point, you should have a complete setup for your React application with the `MyForm` component wrapped as a web component and ready to be embedded in other applications.
-
-Sure! After updating the `MyForm.tsx` file to export a web component, here are the next steps:
-
-11. Install the `webpack` and `webpack-cli` packages as dev dependencies using the following command:
-   
-   ```
-   npm install --save-dev webpack webpack-cli
-   ```
-
-12. Create a new `webpack.config.js` file in the root of the `my-form` project with the following configuration:
-
-   ```javascript
-   const path = require('path');
-
-   module.exports = {
-     entry: './src/index.tsx',
-     output: {
-       filename: 'my-form.js',
-       path: path.resolve(__dirname, 'dist'),
-       library: 'MyForm',
-       libraryTarget: 'umd',
-     },
-     module: {
-       rules: [
-         {
-           test: /\.(ts|tsx)$/,
-           exclude: /node_modules/,
-           use: {
-             loader: 'ts-loader',
-           },
-         },
-       ],
-     },
-     resolve: {
-       extensions: ['.ts', '.tsx', '.js', '.jsx'],
-     },
-   };
-   ```
-
-   This configuration tells webpack to take the `index.tsx` file in the `src` directory, transpile it using the TypeScript loader, and output the result to a `my-form.js` file in the `dist` directory. The `library` and `libraryTarget` options are used to generate a universal module definition (UMD) that can be used in various environments.
-
-13. Add a new script to the `package.json` file in the `my-form` project to build the web component using webpack:
-
-   ```json
-   {
-     "name": "my-form",
-     "version": "1.0.0",
-     "scripts": {
-       "build": "webpack --mode production"
-     },
-     "devDependencies": {
-       "@types/react": "^17.0.15",
-       "react": "^17.0.2",
-       "react-dom": "^17.0.2",
-       "ts-loader": "^9.2.6",
-       "typescript": "^4.3.5",
-       "webpack": "^5.38.1",
-       "webpack-cli": "^4.7.2"
-     }
-   }
-   ```
-
-14. Run the following command to build the web component:
-
-   ```
-   npm run build
-   ```
-
-15. After the build completes, you will find a `my-form.js` file in the `dist` directory of the `my-form` project. You can now include this file in your parent project and use the `my-form` component as a web component.
