@@ -1,5 +1,4 @@
-
-I’ve written about how to use web components with Angular Elements, but I think the discussion about web components goes a lot deeper than just how to use them. Web components provide a standardized way to export components and functionality across web platforms. In the last article, we created a contact form using Angular Elements and saw just how easy it is to integrate them into a website. It could be said that this is the exact same kind of thing an iFrame would have been used for. In this article, I want to discuss these two technologies, how they differ, where they’re similar, and what the future may hold for them both.
+https://sam-redmond.com/will-web-components-replace-iframes-275a0824377b
 
 What is an iFrame?
 In short, an iFrame is an HTML document embedded inside another HTML document. You’ve probably come across loads of different kinds of iFrames even if you weren’t fully aware of it. The humble iFrame has been around since the late 90s and was first introduced by Microsoft. It became the standard for embedding one site inside another for decades. Today we still see a boatload of sites using iFrames. The reason for that is that no one had really come up with something better! There was no real way to do what an iFrame does and make it completely cross-platform.
