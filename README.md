@@ -1,26 +1,193 @@
+Certainly, here is an example of how you could create a React app using TypeScript and Webpack, with a form component that can be embedded in a parent project that lives in a different repository:
 
+1. Create a new React project with TypeScript:
 
-An `iframe` is an HTML element that allows you to embed another HTML document inside the current document. It's essentially a window into another web page that's displayed within the current web page. On the other hand, a web component is a collection of HTML, CSS, and JavaScript code that defines a custom HTML element that can be reused across web pages.
+   ```
+   npx create-react-app my-form --template typescript
+   ```
 
-Here's a table comparing the pros and cons of using `iframe` and web components:
+2. Install the necessary dependencies:
 
-| Aspect             | iFrame                                                      | Web Component                                           |
-| ------------------ | ------------------------------------------------------------ | ------------------------------------------------------- |
-| **Loading**        | Slower to load due to the extra HTTP request and rendering process | Faster to load since the code is loaded with the page   |
-| **Communication**  | Limited communication between parent and child pages         | Rich communication between the custom element and page  |
-| **Styling**        | Styling is isolated, making it difficult to maintain a consistent look and feel across pages | Styling is encapsulated, making it easier to maintain consistency |
-| **DOM Access**     | Access to the DOM of the embedded page is restricted          | Full access to the DOM of the custom element and its children |
-| **Security**       | Can be a security risk if the embedded page is not trusted     | No security risks since the code is part of the main page |
-| **Browser Support** | Supported by all modern browsers                               | Limited support in older browsers                        |
+   ```
+   cd my-form
+   npm install --save-dev webpack webpack-cli webpack-dev-server ts-loader html-webpack-plugin
+   ```
 
-In summary, `iframe` and web components have different use cases. `iframe` is best for embedding content from another website that you don't have control over, while web components are best for creating reusable components that can be used across web pages. Ultimately, the choice between `iframe` and web components depends on your specific use case and the tradeoffs you are willing to make.
+3. Create a new directory named `src/components` and add a new file named `MyForm.tsx` inside it:
 
-When it comes to performance, `iframe` and web components have different implications.
+   ```tsx
+   import React, { useState } from 'react';
 
-`iframe` can be slower to load due to the extra HTTP request and rendering process needed to display the embedded page within the current page. It also creates an additional DOM context and can increase the size of the page.
+   interface FormProps {
+     firstName: string;
+     lastName: string;
+     onSubmit: (firstName: string, lastName: string) => void;
+   }
 
-On the other hand, web components can improve performance since they can be preloaded with the page and don't require an additional HTTP request. They also have the potential to reduce the size of the page since they can be reused across multiple pages.
+   const MyForm: React.FC<FormProps> = ({ firstName, lastName, onSubmit }) => {
+     const [values, setValues] = useState({ firstName, lastName });
 
-However, it's important to note that the performance impact of `iframe` and web components can vary depending on the specific implementation and use case. For example, if the embedded content within the `iframe` is lightweight and static, the impact on performance may be minimal. Similarly, if a web component is complex and requires a lot of JavaScript to function, it could impact performance negatively.
+     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+       setValues({ ...values, [e.target.name]: e.target.value });
+     };
 
-In general, it's best to benchmark the performance impact of `iframe` and web components in your specific use case and make a decision based on the results.
+     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+       e.preventDefault();
+       onSubmit(values.firstName, values.lastName);
+     };
+
+     return (
+       <form onSubmit={handleSubmit}>
+         <div>
+           <label htmlFor="firstName">First Name:</label>
+           <input type="text" name="firstName" value={values.firstName} onChange={handleChange} />
+         </div>
+         <div>
+           <label htmlFor="lastName">Last Name:</label>
+           <input type="text" name="lastName" value={values.lastName} onChange={handleChange} />
+         </div>
+         <button type="submit">Submit</button>
+       </form>
+     );
+   };
+
+   export default MyForm;
+   ```
+
+4. Install the `react-web-component` package:
+
+   ```
+   npm install --save react-web-component
+   ```
+
+5. Update the `MyForm.tsx` file to export a web component:
+
+   ```tsx
+   import React, { useState } from 'react';
+   import { defineWebComponent } from 'react-web-component';
+
+   interface FormProps {
+     firstName: string;
+     lastName: string;
+     onSubmit: (firstName: string, lastName: string) => void;
+   }
+
+   const MyForm: React.FC<FormProps> = ({ firstName, lastName, onSubmit }) => {
+     const [values, setValues] = useState({ firstName, lastName });
+
+     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+       setValues({ ...values, [e.target.name]: e.target.value });
+     };
+
+     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+       e.preventDefault();
+       onSubmit(values.firstName, values.lastName);
+     };
+
+     return (
+       <form onSubmit={handleSubmit}>
+         <div>
+           <label htmlFor="firstName">First Name:</label>
+           <input type="text" name="firstName" value={values.firstName} onChange={handleChange} />
+         </div>
+         <div>
+           <label htmlFor="lastName">Last Name:</label>
+           <input type="text" name="lastName" value={values.lastName} onChange={handleChange} />
+         </div>
+         <button type="submit">Submit</button>
+       </form>
+     );
+   };
+
+   defineWebComponent(MyForm, 'my-form');
+   ```
+6. Create a new directory in the root of your project and name it `src`.
+7. Inside the `src` directory, create a new file named `index.tsx`.
+8. Open the `index.tsx` file and add the following code:
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import MyForm from '../components/MyForm';
+
+// Render the MyForm component to the #root element
+ReactDOM.render(
+  <MyForm />,
+  document.getElementById('root')
+);
+```
+
+9. This code imports the `MyForm` component from the `../components/MyForm` path and renders it to the `#root` element in the HTML file.
+
+10. Save the `index.tsx` file.
+
+At this point, you should have a complete setup for your React application with the `MyForm` component wrapped as a web component and ready to be embedded in other applications.
+
+Sure! After updating the `MyForm.tsx` file to export a web component, here are the next steps:
+
+11. Install the `webpack` and `webpack-cli` packages as dev dependencies using the following command:
+   
+   ```
+   npm install --save-dev webpack webpack-cli
+   ```
+
+12. Create a new `webpack.config.js` file in the root of the `my-form` project with the following configuration:
+
+   ```javascript
+   const path = require('path');
+
+   module.exports = {
+     entry: './src/index.tsx',
+     output: {
+       filename: 'my-form.js',
+       path: path.resolve(__dirname, 'dist'),
+       library: 'MyForm',
+       libraryTarget: 'umd',
+     },
+     module: {
+       rules: [
+         {
+           test: /\.(ts|tsx)$/,
+           exclude: /node_modules/,
+           use: {
+             loader: 'ts-loader',
+           },
+         },
+       ],
+     },
+     resolve: {
+       extensions: ['.ts', '.tsx', '.js', '.jsx'],
+     },
+   };
+   ```
+
+   This configuration tells webpack to take the `index.tsx` file in the `src` directory, transpile it using the TypeScript loader, and output the result to a `my-form.js` file in the `dist` directory. The `library` and `libraryTarget` options are used to generate a universal module definition (UMD) that can be used in various environments.
+
+13. Add a new script to the `package.json` file in the `my-form` project to build the web component using webpack:
+
+   ```json
+   {
+     "name": "my-form",
+     "version": "1.0.0",
+     "scripts": {
+       "build": "webpack --mode production"
+     },
+     "devDependencies": {
+       "@types/react": "^17.0.15",
+       "react": "^17.0.2",
+       "react-dom": "^17.0.2",
+       "ts-loader": "^9.2.6",
+       "typescript": "^4.3.5",
+       "webpack": "^5.38.1",
+       "webpack-cli": "^4.7.2"
+     }
+   }
+   ```
+
+14. Run the following command to build the web component:
+
+   ```
+   npm run build
+   ```
+
+15. After the build completes, you will find a `my-form.js` file in the `dist` directory of the `my-form` project. You can now include this file in your parent project and use the `my-form` component as a web component.
