@@ -28,3 +28,39 @@ For building a component library in React, using an npm package approach is gene
 5. Flexibility: Publishing your components as npm packages allows users to choose the build tool of their choice, whether it's Webpack, Rollup, or any other bundler. This flexibility ensures compatibility with various development environments and build configurations.
 
 While Webpack Module Federation offers dynamic module sharing at runtime, it is typically used in more complex scenarios such as microfrontends or applications composed of independently developed modules. For a component library, an npm package approach provides a simpler and more straightforward solution.
+
+When using a module exported with Webpack Module Federation, you can consume it in another application by following these steps:
+
+1. Import the remote module:
+   In your consuming application, you need to import the remote module from the federated module. The import statement should specify the remote module name and the URL from where it will be fetched. The format of the import statement depends on the module federation configuration.
+
+   For example, if you have a federated module named `MyModule` exposed at `http://example.com/remoteEntry.js`, you can import it as follows:
+
+   ```javascript
+   import('MyModule@http://example.com/remoteEntry.js');
+   ```
+
+2. Use the imported module:
+   Once you have imported the remote module, you can use its components, functions, or other exports in your application.
+
+   For example, if the remote module exports a React component called `MyComponent`, you can use it like this:
+
+   ```javascript
+   import('MyModule@http://example.com/remoteEntry.js').then((module) => {
+     const MyComponent = module.MyComponent;
+     // Use the component in your application
+   });
+   ```
+
+   Alternatively, if the remote module exports functions or other utilities, you can use them directly without assigning them to a variable.
+
+   ```javascript
+   import('MyModule@http://example.com/remoteEntry.js').then((module) => {
+     module.someFunction();
+     // Use other exports from the module
+   });
+   ```
+
+Note that the actual syntax and configuration details may vary depending on the specific setup of your Webpack Module Federation. Make sure to refer to the documentation and configuration of your module federation setup for the correct syntax and usage.
+
+It's also worth mentioning that when using Webpack Module Federation, the remote module is dynamically loaded at runtime, which means the module will be fetched and executed on-demand when the import statement is encountered in your application.
