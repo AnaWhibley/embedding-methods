@@ -1,100 +1,30 @@
-How to build the web component as a standalone .js file and use it in other projects without publishing it. To achieve this, you can follow these steps:
+1. NPM Package:
+   - An npm package is a self-contained module or library that can be published to and installed from the npm registry.
+   - It contains the compiled code, dependencies, and other necessary files to be used in other projects.
+   - NPM packages are typically built using a bundler like Webpack or Rollup and are distributed as a package that can be easily installed using the `npm install` command.
+   - When using an npm package, the package and its dependencies are bundled together, and the code is typically executed within the same JavaScript runtime as the consuming application.
+   - NPM packages provide a way to distribute and reuse code across different projects or applications.
 
-1. In the next.js application, create a separate directory called `components-dist` (or any name of your choice) under the root directory. This directory will contain the built web component files.
+2. Webpack Module Federation:
+   - Webpack Module Federation is a feature of Webpack that enables sharing JavaScript modules across multiple applications or microfrontends at runtime.
+   - It allows you to build applications composed of independently developed and deployed modules that can be dynamically loaded and shared with other applications.
+   - With Webpack Module Federation, modules from one application can be exposed and consumed by other applications without having to explicitly package and distribute them as separate npm packages.
+   - Module Federation leverages the concept of Remote Entry Points, which allow an application to consume modules from another application at runtime.
+   - Each application maintains its own codebase and dependencies, and modules can be shared between applications without bundling them together. The shared modules are loaded and executed dynamically at runtime.
+   - Webpack Module Federation is often used in microfrontend architectures, where multiple applications collaborate to create a larger application composed of smaller, independently deployable units.
 
-2. Install the required dependencies using npm. Run the following command in your terminal:
-```
-npm install webpack webpack-cli webpack-dev-server html-webpack-plugin babel-loader @babel/core @babel/preset-env @babel/preset-react react react-dom react-web-component
-```
+In summary, an npm package is a self-contained module that is published and installed from the npm registry, while Webpack Module Federation is a Webpack feature that allows dynamic sharing of modules across multiple applications or microfrontends at runtime.
 
-3. Create a new file called `webpack.config.js` under the root directory of your next.js application. Add the following code to this file:
+For building a component library in React, using an npm package approach is generally recommended. Here's why:
 
-```javascript
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const path = require("path");
+1. Ease of Distribution: Packaging your components as npm packages allows for easy distribution and installation across different projects. Users can simply install your component library as a dependency using the standard `npm install` command.
 
-module.exports = {
-  entry: "./src/components/form.tsx",
-  output: {
-    path: path.resolve(__dirname, "components-dist"),
-    filename: "form.js",
-    libraryTarget: "umd",
-    library: "formComponent",
-    umdNamedDefine: true,
-    globalObject: "this",
-  },
-  devtool: "source-map",
-  resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx"],
-  },
-  module: {
-    rules: [
-      {
-        test: /\.(js|jsx|ts|tsx)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [
-              "@babel/preset-env",
-              "@babel/preset-react",
-              "@babel/preset-typescript",
-            ],
-          },
-        },
-      },
-    ],
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "./src/index.html",
-      filename: "index.html",
-      inject: false,
-    }),
-  ],
-};
-```
+2. Versioning and Dependency Management: With an npm package, you can manage versions and dependencies of your component library using the package.json file. This gives you control over the compatibility of your components and allows users to easily update to newer versions when needed.
 
-4. Create an `index.html` file under the `src` directory with the following content:
+3. Clear Separation: By publishing your components as npm packages, you create a clear separation between the library and the consuming projects. This separation helps maintain modularity and ensures that updates or changes to the library don't impact the consuming applications.
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Form Component</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script src="./form.js"></script>
-  </body>
-</html>
-```
+4. Community Integration: The npm registry is a widely adopted and well-established package repository, making it easier for other developers to discover and use your component library. It also provides features like documentation, versioning, and a community-driven ecosystem.
 
-5. Add the following script to the `package.json` file:
+5. Flexibility: Publishing your components as npm packages allows users to choose the build tool of their choice, whether it's Webpack, Rollup, or any other bundler. This flexibility ensures compatibility with various development environments and build configurations.
 
-```json
-"scripts": {
-  "build": "webpack --mode production"
-},
-```
-
-6. Run the build command to create the web component file:
-
-```
-npm run build
-```
-
-7. The built web component file will be available under the `components-dist` directory. You can use this file in other projects by importing it like any other script file:
-
-```html
-<script src="path/to/form.js"></script>
-```
-
-Once you've imported the script file, you can use the web component like any other custom element in your HTML:
-
-```html
-<form-component></form-component>
-```
-
-Make sure to include the script file before using the web component in your HTML.
+While Webpack Module Federation offers dynamic module sharing at runtime, it is typically used in more complex scenarios such as microfrontends or applications composed of independently developed modules. For a component library, an npm package approach provides a simpler and more straightforward solution.
